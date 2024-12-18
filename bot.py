@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+# 导入 Web3 库
 from web3 import Web3
 from eth_account import Account
 import time
@@ -8,7 +7,7 @@ import os
 
 # 数据桥接配置
 from data_bridge import data_bridge
-from keys_and_addresses import private_keys, my_addresses, labels
+from keys_and_addresses import private_keys, labels  # 不再读取 my_addresses
 from network_config import networks
 
 # 文本居中函数
@@ -123,8 +122,12 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
     for bridge in bridges:
         for i, private_key in enumerate(private_keys):
             account = Account.from_key(private_key)
+
+            # 通过私钥生成地址
+            my_address = account.address
+
             data = data_bridge[bridge]
-            result = send_bridge_transaction(web3, account, my_addresses[i], data, network_name)
+            result = send_bridge_transaction(web3, account, my_address, data, network_name)
             if result:
                 tx_hash, value_sent = result
                 successful_txs += 1
