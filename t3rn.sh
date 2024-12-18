@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 脚本保存路径
+SCRIPT_PATH="$HOME/t3rn.sh"
+
 # 检查是否为root用户
 if [ "$EUID" -ne 0 ]; then 
     echo -e "${RED}请使用 sudo 运行此脚本${NC}"
