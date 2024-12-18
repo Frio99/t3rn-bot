@@ -41,6 +41,7 @@ echo "已进入目录 $DIR_NAME"
 # 安装依赖
 echo "正在安装依赖 web3 和 colorama..."
 pip install web3 colorama
+sudo pip3 install --upgrade pip
 
 # 提醒用户私钥安全
 echo "警告：请务必确保您的私钥安全！"
