@@ -4,6 +4,7 @@ from eth_account import Account
 import time
 import sys
 import os
+import random  # 引入随机模块
 
 # 数据桥接配置
 from data_bridge import data_bridge
@@ -131,7 +132,11 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
             # 通过私钥生成地址
             my_address = account.address
 
-            data = data_bridge[bridge]
+            data = data_bridge.get(bridge)  # 确保 data_bridge 是字典类型
+            if not data:
+                print(f"桥接 {bridge} 数据不可用!")
+                continue
+
             result = send_bridge_transaction(web3, account, my_address, data, network_name)
             if result:
                 tx_hash, value_sent = result
@@ -145,7 +150,11 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
 
                 print(f"{'='*150}")
                 print("\n")
-            time.sleep(7)
+            
+            # 随机等待 30 到 60 秒
+            wait_time = random.uniform(30, 60)
+            print(f"⏳ 等待 {wait_time:.2f} 秒后继续...\n")
+            time.sleep(wait_time)  # 随机延迟时间
 
     return successful_txs
 
@@ -187,7 +196,7 @@ def main():
         successful_txs = process_network_transactions(current_network, ["ARB - OP SEPOLIA"] if current_network == 'Arbitrum Sepolia' else ["OP - ARB"], networks[current_network], successful_txs)
 
         # 自动切换网络
-        time.sleep(7)
+        time.sleep(random.uniform(30, 60))  # 在每次切换网络时增加随机的延时
 
 if __name__ == "__main__":
     main()
