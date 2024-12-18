@@ -12,6 +12,7 @@ DIR_NAME="t3rn-bot"
 PYTHON_FILE="keys_and_addresses.py"
 DATA_BRIDGE_FILE="data_bridge.py"
 BOT_FILE="bot.py"
+VENV_DIR="t3rn-env"  # 虚拟环境目录
 
 # 检查是否安装了 git
 if ! command -v git &> /dev/null; then
@@ -38,10 +39,18 @@ fi
 
 echo "已进入目录 $DIR_NAME"
 
+# 创建虚拟环境并激活
+echo "正在创建虚拟环境..."
+python3 -m venv "$VENV_DIR"
+source "$VENV_DIR/bin/activate"
+
+# 升级 pip
+echo "正在升级 pip..."
+pip install --upgrade pip
+
 # 安装依赖
 echo "正在安装依赖 web3 和 colorama..."
 pip install web3 colorama
-sudo pip3 install --upgrade pip
 
 # 提醒用户私钥安全
 echo "警告：请务必确保您的私钥安全！"
