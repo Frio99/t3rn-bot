@@ -1,12 +1,11 @@
 # keys_and_addresses.py
+
+# 私钥列表 (每个私钥应为一个字符串)
 private_keys = [
-    'YOUR PRIVATE KEY WALLET 1'
+    ""
 ]
 
-my_addresses = [
-    'ADDRESS 1'
-]
-
+# 标签列表 (每个标签与私钥一一对应)
 labels = [
-    'Wallet 1'
+    ""
 ]
