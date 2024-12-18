@@ -106,8 +106,13 @@ echo "正在写入 $DATA_BRIDGE_FILE 文件..."
 cat > $DATA_BRIDGE_FILE <<EOL
 # 此文件由脚本生成
 
-arb_op_sepolia = '$arb_op_sepolia_value'
-op_arb = '$op_arb_value'
+data_bridge = {
+    # Data bridge Arbitrum Sepolia
+    "ARB - OP SEPOLIA": "$arb_op_sepolia_value",
+
+    # Data bridge OP Sepolia
+    "OP - ARB": "$op_arb_value",
+}
 EOL
 
 echo "$DATA_BRIDGE_FILE 文件已生成。"
