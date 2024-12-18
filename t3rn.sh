@@ -48,27 +48,21 @@ echo "私钥应当保存在安全的位置，切勿公开分享或泄漏给他�
 echo "如果您的私钥被泄漏，可能导致您的资产丧失！"
 echo "请输入您的私钥，确保安全操作。"
 
-# 让用户输入私钥和地址
+# 让用户输入私钥和标签
 echo "请输入您的私钥（多个私钥以空格分隔）："
 read -r private_keys_input
 
-echo "请输入您的地址（多个地址以空格分隔，与私钥顺序一致）："
-read -r addresses_input
+echo "请输入您的标签（多个标签以空格分隔，与私钥顺序一致）："
+read -r labels_input
 
 # 检查输入是否一致
 IFS=' ' read -r -a private_keys <<< "$private_keys_input"
-IFS=' ' read -r -a addresses <<< "$addresses_input"
+IFS=' ' read -r -a labels <<< "$labels_input"
 
-if [ "${#private_keys[@]}" -ne "${#addresses[@]}" ]; then
-    echo "私钥和地址数量不一致，请重新运行脚本并确保它们匹配！"
+if [ "${#private_keys[@]}" -ne "${#labels[@]}" ]; then
+    echo "私钥和标签数量不一致，请重新运行脚本并确保它们匹配！"
     exit 1
 fi
-
-# 创建标签，与地址一致
-labels=()
-for i in "${!addresses[@]}"; do
-    labels+=("Wallet $((i+1))")
-done
 
 # 写入 keys_and_addresses.py 文件
 echo "正在写入 $PYTHON_FILE 文件..."
@@ -79,10 +73,6 @@ private_keys = [
 $(printf "    '%s',\n" "${private_keys[@]}")
 ]
 
-my_addresses = [
-$(printf "    '%s',\n" "${addresses[@]}")
-]
-
 labels = [
 $(printf "    '%s',\n" "${labels[@]}")
 ]
@@ -90,9 +80,9 @@ EOL
 
 echo "$PYTHON_FILE 文件已生成。"
 
-# 提示私钥安全
-echo "脚本执行完成！所有依赖已安装，私钥和地址已保存到 $PYTHON_FILE 中。"
-echo "请务必妥善保管此文件，避免泄露您的私钥和地址信息！"
+# 提醒用户私钥安全
+echo "脚本执行完成！所有依赖已安装，私钥和标签已保存到 $PYTHON_FILE 中。"
+echo "请务必妥善保管此文件，避免泄露您的私钥和标签信息！"
 
 # 获取额外的用户输入："ARB - OP SEPOLIA" 和 "OP - ARB"
 echo "请输入 'ARB - OP SEPOLIA' 的值："
