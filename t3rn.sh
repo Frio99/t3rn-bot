@@ -23,10 +23,17 @@ if ! command -v git &> /dev/null; then
     exit 1
 fi
 
-# 检查是否安装了 pip
-if ! command -v pip &> /dev/null; then
-    echo "pip 未安装，请先安装 pip。"
-    exit 1
+# 检查是否安装了 python3-pip 和 python3-venv
+if ! command -v pip3 &> /dev/null; then
+    echo "pip 未安装，正在安装 python3-pip..."
+    sudo apt update
+    sudo apt install -y python3-pip
+fi
+
+if ! command -v python3 -m venv &> /dev/null; then
+    echo "python3-venv 未安装，正在安装 python3-venv..."
+    sudo apt update
+    sudo apt install -y python3-venv
 fi
 
 # 拉取仓库
