@@ -49,6 +49,11 @@ def get_brn_balance(web3, my_address):
     balance = web3.eth.get_balance(my_address)
     return web3.from_wei(balance, 'ether')
 
+# 检查链的余额函数
+def check_balance(web3, my_address):
+    balance = web3.eth.get_balance(my_address)
+    return web3.from_wei(balance, 'ether')
+
 # 创建和发送交易的函数
 def send_bridge_transaction(web3, account, my_address, data, network_name):
     nonce = web3.eth.get_transaction_count(my_address, 'pending')
@@ -160,35 +165,29 @@ def main():
     print("\n\n")
 
     successful_txs = 0
+    current_network = 'Arbitrum Sepolia'  # 默认从 Arbitrum Sepolia 开始
+    alternate_network = 'OP Sepolia'
 
     while True:
-        # 显示菜单并获取用户选择
-        choice = display_menu()
-        clear_terminal()  # 在显示新交易前清理终端
-        print("\033[92m" + center_text(description) + "\033[0m")
-        print("\n\n")
+        # 检查当前网络余额是否足够
+        web3 = Web3(Web3.HTTPProvider(networks[current_network]['rpc_url']))
+        if not web3.is_connected():
+            print(f"无法连接到 {current_network}")
+            break
+        
+        my_address = Account.from_key(private_keys[0]).address  # 使用第一个私钥的地址
+        balance = check_balance(web3, my_address)
 
-        try:
-            if choice == '1':
-                while True:
-                    successful_txs = process_network_transactions('Arbitrum Sepolia', ["ARB - OP SEPOLIA"], networks['Arbitrum Sepolia'], successful_txs)
-            elif choice == '2':
-                while True:
-                    successful_txs = process_network_transactions('OP Sepolia', ["OP - ARB"], networks['OP Sepolia'], successful_txs)
-            elif choice == '3':
-                while True:
-                    successful_txs = process_network_transactions('Arbitrum Sepolia', ["ARB - OP SEPOLIA"], networks['Arbitrum Sepolia'], successful_txs)
-                    successful_txs = process_network_transactions('OP Sepolia', ["OP - ARB"], networks['OP Sepolia'], successful_txs)
-            else:
-                print("无效选择。请再试一次。")
+        # 如果余额不足 0.1 ETH，切换到另一个链
+        if balance < 0.1:
+            print(f"{chain_symbols[current_network]}{current_network}余额不足 0.1 ETH，切换到 {alternate_network}{reset_color}")
+            current_network, alternate_network = alternate_network, current_network  # 交换链
 
-        except KeyboardInterrupt:
-            print("\n脚本被用户终止。 ✋")
-            print(f"成功交易总数: {successful_txs} 🎉")
-            sys.exit(0)
-        except Exception as e:
-            print(f"发生错误: {e}")
-            sys.exit(1)
+        # 处理当前链的交易
+        successful_txs = process_network_transactions(current_network, ["ARB - OP SEPOLIA"] if current_network == 'Arbitrum Sepolia' else ["OP - ARB"], networks[current_network], successful_txs)
+
+        # 自动切换网络
+        time.sleep(7)
 
 if __name__ == "__main__":
     main()
