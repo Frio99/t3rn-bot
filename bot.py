@@ -161,11 +161,11 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
 # 显示链选择菜单的函数
 def display_menu():
     print(f"{menu_color}选择要运行交易的链:{reset_color}")
-    print("")
+    print(" ")
     print(f"{chain_symbols['Arbitrum Sepolia']}1. ARB -> OP Sepolia{reset_color}")
     print(f"{chain_symbols['OP Sepolia']}2. OP -> ARB Sepolia{reset_color}")
     print(f"{menu_color}3. 运行所有链{reset_color}")
-    print("")
+    print(" ")
     choice = input("输入选择 (1-3): ")
     return choice
 
@@ -180,9 +180,14 @@ def main():
     while True:
         # 检查当前网络余额是否足够
         web3 = Web3(Web3.HTTPProvider(networks[current_network]['rpc_url']))
-        if not web3.is_connected():
-            print(f"无法连接到 {current_network}")
-            break
+        
+        # 如果无法连接，尝试重新连接
+        while not web3.is_connected():
+            print(f"无法连接到 {current_network}，正在尝试重新连接...")
+            time.sleep(5)  # 等待 5 秒后重试
+            web3 = Web3(Web3.HTTPProvider(networks[current_network]['rpc_url']))
+        
+        print(f"成功连接到 {current_network}")
         
         my_address = Account.from_key(private_keys[0]).address  # 使用第一个私钥的地址
         balance = check_balance(web3, my_address)
