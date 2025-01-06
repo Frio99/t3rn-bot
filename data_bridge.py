@@ -1,9 +1,9 @@
 # data_bridge.py
 
 data_bridge = {
-    # Data bridge Arbitrum Sepolia
-    "ARB - OP SEPOLIA": '',
+    # Data bridge Base
+    "Base - OP Sepolia": '',
 
     # Data bridge OP Sepolia
-    "OP - ARB": '',
+    "OP - Base": '',
 }
