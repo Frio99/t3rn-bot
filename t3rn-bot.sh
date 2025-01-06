@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 脚本保存路径
-SCRIPT_PATH="$HOME/t3rn.sh"
+SCRIPT_PATH="$HOME/t3rn-bot.sh"
 
 # 定义仓库地址和目录名称
 REPO_URL="https://github.com/sdohuajia/t3rn-bot.git"
