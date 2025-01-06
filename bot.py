@@ -29,7 +29,7 @@ description = """
 
 # 每个链的颜色和符号
 chain_symbols = {
-    'Arbitrum Sepolia': '\033[34m',   
+    'Base': '\033[34m',  # 更新为 Base 链的颜色
     'OP Sepolia': '\033[91m',         
 }
 
@@ -40,7 +40,7 @@ menu_color = '\033[95m'  # 菜单文本颜色
 
 # 每个网络的区块浏览器URL
 explorer_urls = {
-    'Arbitrum Sepolia': 'https://sepolia.arbiscan.io/tx/',
+    'Base': 'https://sepolia.base.org', 
     'OP Sepolia': 'https://sepolia-optimism.etherscan.io/tx/',
     'BRN': 'https://brn.explorer.caldera.xyz/tx/'
 }
@@ -122,8 +122,14 @@ def send_bridge_transaction(web3, account, my_address, data, network_name):
 # 在特定网络上处理交易的函数
 def process_network_transactions(network_name, bridges, chain_data, successful_txs):
     web3 = Web3(Web3.HTTPProvider(chain_data['rpc_url']))
-    if not web3.is_connected():
-        raise Exception(f"无法连接到网络 {network_name}")
+
+    # 如果无法连接，重试直到成功
+    while not web3.is_connected():
+        print(f"无法连接到 {network_name}，正在尝试重新连接...")
+        time.sleep(5)  # 等待 5 秒后重试
+        web3 = Web3(Web3.HTTPProvider(chain_data['rpc_url']))
+    
+    print(f"成功连接到 {network_name}")
 
     for bridge in bridges:
         for i, private_key in enumerate(private_keys):
@@ -152,7 +158,7 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
                 print("\n")
             
             # 随机等待 30 到 60 秒
-            wait_time = random.uniform(30, 60)
+            wait_time = random.uniform(30, 40)
             print(f"⏳ 等待 {wait_time:.2f} 秒后继续...\n")
             time.sleep(wait_time)  # 随机延迟时间
 
@@ -162,8 +168,8 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
 def display_menu():
     print(f"{menu_color}选择要运行交易的链:{reset_color}")
     print(" ")
-    print(f"{chain_symbols['Arbitrum Sepolia']}1. ARB -> OP Sepolia{reset_color}")
-    print(f"{chain_symbols['OP Sepolia']}2. OP -> ARB Sepolia{reset_color}")
+    print(f"{chain_symbols['Base']}1. Base -> OP Sepolia{reset_color}")
+    print(f"{chain_symbols['OP Sepolia']}2. OP -> Base{reset_color}")
     print(f"{menu_color}3. 运行所有链{reset_color}")
     print(" ")
     choice = input("输入选择 (1-3): ")
@@ -174,7 +180,7 @@ def main():
     print("\n\n")
 
     successful_txs = 0
-    current_network = 'Arbitrum Sepolia'  # 默认从 Arbitrum Sepolia 开始
+    current_network = 'Base'  # 默认从 Base 链开始
     alternate_network = 'OP Sepolia'
 
     while True:
@@ -198,7 +204,7 @@ def main():
             current_network, alternate_network = alternate_network, current_network  # 交换链
 
         # 处理当前链的交易
-        successful_txs = process_network_transactions(current_network, ["ARB - OP SEPOLIA"] if current_network == 'Arbitrum Sepolia' else ["OP - ARB"], networks[current_network], successful_txs)
+        successful_txs = process_network_transactions(current_network, ["Base - OP Sepolia"] if current_network == 'Base' else ["OP - Base"], networks[current_network], successful_txs)
 
         # 自动切换网络
         time.sleep(random.uniform(30, 60))  # 在每次切换网络时增加随机的延时
