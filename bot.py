@@ -180,34 +180,35 @@ def main():
     print("\n\n")
 
     successful_txs = 0
-    current_network = 'Base'  # 默认从 Base 链开始
-    alternate_network = 'OP Sepolia'
+    current_network = 'OP Sepolia'  # 修改默认起始链为 OP Sepolia
+    alternate_network = 'Base'      # 修改这里
 
     while True:
-        # 检查当前网络余额是否足够
         web3 = Web3(Web3.HTTPProvider(networks[current_network]['rpc_url']))
         
-        # 如果无法连接，尝试重新连接
         while not web3.is_connected():
             print(f"无法连接到 {current_network}，正在尝试重新连接...")
-            time.sleep(5)  # 等待 5 秒后重试
+            time.sleep(5)
             web3 = Web3(Web3.HTTPProvider(networks[current_network]['rpc_url']))
         
         print(f"成功连接到 {current_network}")
         
-        my_address = Account.from_key(private_keys[0]).address  # 使用第一个私钥的地址
+        my_address = Account.from_key(private_keys[0]).address
         balance = check_balance(web3, my_address)
 
-        # 如果余额不足 0.1 ETH，切换到另一个链
         if balance < 0.1:
             print(f"{chain_symbols[current_network]}{current_network}余额不足 0.1 ETH，切换到 {alternate_network}{reset_color}")
-            current_network, alternate_network = alternate_network, current_network  # 交换链
+            current_network, alternate_network = alternate_network, current_network
 
-        # 处理当前链的交易
-        successful_txs = process_network_transactions(current_network, ["Base - OP Sepolia"] if current_network == 'Base' else ["OP - Base"], networks[current_network], successful_txs)
+        # 修改桥接方向
+        successful_txs = process_network_transactions(
+            current_network, 
+            ["OP - Base"] if current_network == 'OP Sepolia' else ["Base - OP Sepolia"],  # 修改这里
+            networks[current_network], 
+            successful_txs
+        )
 
-        # 自动切换网络
-        time.sleep(random.uniform(30, 60))  # 在每次切换网络时增加随机的延时
+        time.sleep(random.uniform(30, 60))
 
 if __name__ == "__main__":
     main()
