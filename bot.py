@@ -163,8 +163,8 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
                 print(f"{'='*150}")
                 print("\n")
             
-            # 随机等待 30 到 60 秒
-            wait_time = random.uniform(30, 40)
+            # 随机等待 10-15 秒 (原来是 30-40 秒)
+            wait_time = random.uniform(10, 15)
             print(f"⏳ 等待 {wait_time:.2f} 秒后继续...\n")
             time.sleep(wait_time)  # 随机延迟时间
 
@@ -214,7 +214,8 @@ def main():
             successful_txs
         )
 
-        time.sleep(random.uniform(30, 60))
+        # 修改主循环中的等待时间也为 10-15 秒 (原来是 30-60 秒)
+        time.sleep(random.uniform(10, 15))
 
 if __name__ == "__main__":
     main()
