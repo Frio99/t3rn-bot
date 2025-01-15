@@ -58,7 +58,13 @@ def check_balance(web3, my_address):
 # 创建和发送交易的函数
 def send_bridge_transaction(web3, account, my_address, data, network_name):
     nonce = web3.eth.get_transaction_count(my_address, 'pending')
-    value_in_ether = 0.1
+    
+    # 根据网络设置不同的交易金额
+    if network_name == 'OP Sepolia':
+        value_in_ether = 0.2  # OP Sepolia 设置为 0.2 ETH
+    else:
+        value_in_ether = 1.0  # Base 设置为 1 ETH
+        
     value_in_wei = web3.to_wei(value_in_ether, 'ether')
 
     try:
