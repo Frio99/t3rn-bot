@@ -197,10 +197,13 @@ def main():
         
         my_address = Account.from_key(private_keys[0]).address
         balance = check_balance(web3, my_address)
+        
+        print(f"{chain_symbols[current_network]}当前链: {current_network}, 余额: {balance} ETH{reset_color}")
 
-        if balance < 0.1:
-            print(f"{chain_symbols[current_network]}{current_network}余额不足 0.1 ETH，切换到 {alternate_network}{reset_color}")
+        if balance < 0.2:
+            print(f"{chain_symbols[current_network]}{current_network} 余额不足 0.2 ETH，切换到 {alternate_network}{reset_color}")
             current_network, alternate_network = alternate_network, current_network
+            continue
 
         # 修改桥接方向
         successful_txs = process_network_transactions(
