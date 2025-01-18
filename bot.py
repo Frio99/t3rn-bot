@@ -182,9 +182,6 @@ def main():
     elif choice == '2':
         current_network = 'OP Sepolia'
         alternate_network = 'Base'
-    elif choice == '3':
-        current_network = 'OP Sepolia'  # 运行所有链时的起始链
-        alternate_network = 'Base'
     else:
         print("无效的选择！")
         return
@@ -206,10 +203,6 @@ def main():
 
         if balance < bridge_amount:
             print(f"{chain_symbols[current_network]}{current_network} 余额不足 {bridge_amount} ETH，切换到 {alternate_network}{reset_color}")
-            # 如果不是运行所有链模式，则在余额不足时退出
-            if choice != '3':
-                print("单链模式下余额不足，程序退出")
-                break
             current_network, alternate_network = alternate_network, current_network
             continue
 
@@ -222,8 +215,8 @@ def main():
             bridge_amount  # 传入用户设定的跨链金额
         )
 
-        # 修改主循环中的等待时间也为 10-15 秒 (原来是 30-60 秒)
-        time.sleep(random.uniform(10, 15))
+        # 修改主循环中的等待时间为 5-10 秒
+        time.sleep(random.uniform(5, 10))
 
 if __name__ == "__main__":
     main()
