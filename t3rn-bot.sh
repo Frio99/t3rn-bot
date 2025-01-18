@@ -202,6 +202,8 @@ EOL
     if screen -ls | grep -q "t3rn-bot"; then
         echo "screen 会话已成功启动"
         echo "您可以使用 'screen -r t3rn-bot' 查看运行日志"
+        echo -e "\n当前运行中的 screen 会话:"
+        screen -ls
         exit 0  # 直接退出脚本
     else
         echo "screen 会话启动失败"
