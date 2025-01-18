@@ -181,14 +181,28 @@ EOL
     echo "配置完成，正在通过 screen 运行 bot.py..."
 
     # 使用 screen 后台运行 bot.py
-    screen -dmS t3rn-bot python3 $BOT_FILE
-
-    # 输出信息
-    echo "bot.py 已在后台运行，您可以通过 'screen -r t3rn-bot' 查看运行日志。"
-
-    # 提示用户按任意键返回主菜单
-    read -n 1 -s -r -p "按任意键返回主菜单..."
+    echo "正在启动 screen 会话..."
+    
+    # 显示当前目录和文件路径
+    echo "当前目录: $(pwd)"
+    echo "Python文件: $BOT_FILE"
+    echo "虚拟环境: $VENV_DIR"
+    
+    # 使用完整路径并重定向错误输出
+    screen -dmS t3rn-bot bash -c "cd $(pwd) && source $VENV_DIR/bin/activate && python3 $BOT_FILE" 2>&1
+    
+    # 检查 screen 是否成功启动
+    if screen -ls | grep -q "t3rn-bot"; then
+        echo "screen 会话已成功启动"
+        echo "您可以使用 'screen -r t3rn-bot' 查看运行日志"
+        exit 0  # 直接退出脚本
+    else
+        echo "screen 会话启动失败"
+        echo "错误信息:"
+        screen -ls
+        exit 1  # 出错时退出
+    fi
 }
 
-# 启动主菜单
+# 启动主菜单（只执行一次）
 main_menu
