@@ -127,8 +127,15 @@ function execute_cross_chain_script() {
         exit 1
     fi
 
-    # 输入跨链金额
-    read -p "请输入每次跨链的金额(ETH): " bridge_amount
+    # 输入跨链金额并验证
+    while true; do
+        read -p "请输入每次跨链的金额(ETH): " bridge_amount
+        if [[ "$bridge_amount" =~ ^[0-9]*\.?[0-9]+$ ]]; then
+            break
+        else
+            echo "无效的金额！请输入有效的数字（例如：0.1 或 1.5）"
+        fi
+    done
 
     # 写入 keys_and_addresses.py 文件
     echo "正在写入 $PYTHON_FILE 文件..."
@@ -144,8 +151,8 @@ $(printf "    '%s',\n" "${labels[@]}")
 ]
 
 # 用户选择的链和金额
-chain_choice = '$chain_choice'
-bridge_amount = $bridge_amount
+chain_choice = "${chain_choice}"
+bridge_amount = ${bridge_amount}
 EOL
 
     echo "$PYTHON_FILE 文件已生成。"
