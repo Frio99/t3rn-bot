@@ -11,5 +11,5 @@ labels = [
 ]
 
 # 预定义选择和金额变量
-chain_choice = ""
-bridge_amount = 0.0
+chain_choice = "2"
+bridge_amount = 0.4
