@@ -158,8 +158,8 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
                 print(f"{'='*150}")
                 print("\n")
             
-            # 随机等待 5-10 秒 (原来是 10-15 秒)
-            wait_time = random.uniform(5, 10)
+            # 随机等待 10-15 秒
+            wait_time = random.uniform(10, 15)
             print(f"⏳ 等待 {wait_time:.2f} 秒后继续...\n")
             time.sleep(wait_time)  # 随机延迟时间
 
