@@ -8,7 +8,7 @@ import random  # 引入随机模块
 
 # 数据桥接配置
 from data_bridge import data_bridge
-from keys_and_addresses import private_keys, labels, chain_choice, bridge_amount  # 不再读取 my_addresses
+from keys_and_addresses import private_keys, labels, chain_choice, bridge_amount as config_amount  # 重命名为 config_amount
 from network_config import networks
 
 # 文本居中函数
@@ -171,9 +171,9 @@ def main():
 
     successful_txs = 0
     
-    # 使用从配置文件读取的选择和跨链金额
+    # 使用导入的变量
     choice = chain_choice
-    bridge_amount = float(bridge_amount)  # 确保是浮点数
+    bridge_amount = float(config_amount)  # 使用重命名后的变量
     
     # 根据用户选择设置初始网络
     if choice == '1':

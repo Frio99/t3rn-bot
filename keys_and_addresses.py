@@ -10,6 +10,6 @@ labels = [
     ""
 ]
 
-# 预定义选择和金额变量
+# 用户选择的链和金额
 chain_choice = "2"
-bridge_amount = 0.4
+bridge_amount = 0.4  # 确保这个值是数字，不是字符串
