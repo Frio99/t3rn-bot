@@ -8,7 +8,7 @@ import random  # 引入随机模块
 
 # 数据桥接配置
 from data_bridge import data_bridge
-from keys_and_addresses import private_keys, labels  # 不再读取 my_addresses
+from keys_and_addresses import private_keys, labels, chain_choice, bridge_amount  # 不再读取 my_addresses
 from network_config import networks
 
 # 文本居中函数
@@ -158,24 +158,12 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
                 print(f"{'='*150}")
                 print("\n")
             
-            # 随机等待 10-15 秒 (原来是 30-40 秒)
-            wait_time = random.uniform(10, 15)
+            # 随机等待 5-10 秒 (原来是 10-15 秒)
+            wait_time = random.uniform(5, 10)
             print(f"⏳ 等待 {wait_time:.2f} 秒后继续...\n")
             time.sleep(wait_time)  # 随机延迟时间
 
     return successful_txs
-
-# 显示链选择菜单的函数
-def display_menu():
-    print(f"{menu_color}选择要运行交易的链:{reset_color}")
-    print(" ")
-    print(f"{chain_symbols['Base']}1. Base -> OP Sepolia{reset_color}")
-    print(f"{chain_symbols['OP Sepolia']}2. OP -> Base{reset_color}")
-    print(f"{menu_color}3. 运行所有链{reset_color}")
-    print(" ")
-    choice = input("输入选择 (1-3): ")
-    bridge_amount = float(input("请输入每次跨链的金额(ETH): "))
-    return choice, bridge_amount
 
 def main():
     print("\033[92m" + center_text(description) + "\033[0m")
@@ -183,8 +171,9 @@ def main():
 
     successful_txs = 0
     
-    # 获取用户输入的选择和跨链金额
-    choice, bridge_amount = display_menu()
+    # 使用从配置文件读取的选择和跨链金额
+    choice = chain_choice
+    bridge_amount = float(bridge_amount)  # 确保是浮点数
     
     # 根据用户选择设置初始网络
     if choice == '1':

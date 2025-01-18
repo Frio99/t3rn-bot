@@ -115,6 +115,21 @@ function execute_cross_chain_script() {
         exit 1
     fi
 
+    # 选择跨链方向
+    echo "请选择要运行交易的链:"
+    echo "1. Base -> OP Sepolia"
+    echo "2. OP -> Base"
+    read -p "输入选择 (1-2): " chain_choice
+
+    # 验证输入
+    if [[ ! "$chain_choice" =~ ^[1-2]$ ]]; then
+        echo "无效的选择！请输入 1 或 2"
+        exit 1
+    fi
+
+    # 输入跨链金额
+    read -p "请输入每次跨链的金额(ETH): " bridge_amount
+
     # 写入 keys_and_addresses.py 文件
     echo "正在写入 $PYTHON_FILE 文件..."
     cat > $PYTHON_FILE <<EOL
@@ -127,6 +142,10 @@ $(printf "    '%s',\n" "${private_keys[@]}")
 labels = [
 $(printf "    '%s',\n" "${labels[@]}")
 ]
+
+# 用户选择的链和金额
+chain_choice = '$chain_choice'
+bridge_amount = $bridge_amount
 EOL
 
     echo "$PYTHON_FILE 文件已生成。"
