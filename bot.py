@@ -56,11 +56,10 @@ def check_balance(web3, my_address):
     return web3.from_wei(balance, 'ether')
 
 # 创建和发送交易的函数
-def send_bridge_transaction(web3, account, my_address, data, network_name):
+def send_bridge_transaction(web3, account, my_address, data, network_name, value_in_ether):
     nonce = web3.eth.get_transaction_count(my_address, 'pending')
     
-    # 所有网络都设置为 0.2 ETH
-    value_in_ether = 0.2
+    # 使用用户输入的金额
     value_in_wei = web3.to_wei(value_in_ether, 'ether')
 
     try:
@@ -70,7 +69,7 @@ def send_bridge_transaction(web3, account, my_address, data, network_name):
             'data': data,
             'value': value_in_wei
         })
-        gas_limit = gas_estimate + 50000  # 增加安全边际
+        gas_limit = gas_estimate + 50000
     except Exception as e:
         print(f"估计gas错误: {e}")
         return None
@@ -122,7 +121,7 @@ def send_bridge_transaction(web3, account, my_address, data, network_name):
         return None, None
 
 # 在特定网络上处理交易的函数
-def process_network_transactions(network_name, bridges, chain_data, successful_txs):
+def process_network_transactions(network_name, bridges, chain_data, successful_txs, bridge_amount):
     web3 = Web3(Web3.HTTPProvider(chain_data['rpc_url']))
 
     # 如果无法连接，重试直到成功
@@ -145,7 +144,7 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
                 print(f"桥接 {bridge} 数据不可用!")
                 continue
 
-            result = send_bridge_transaction(web3, account, my_address, data, network_name)
+            result = send_bridge_transaction(web3, account, my_address, data, network_name, bridge_amount)
             if result:
                 tx_hash, value_sent = result
                 successful_txs += 1
@@ -175,15 +174,31 @@ def display_menu():
     print(f"{menu_color}3. 运行所有链{reset_color}")
     print(" ")
     choice = input("输入选择 (1-3): ")
-    return choice
+    bridge_amount = float(input("请输入每次跨链的金额(ETH): "))
+    return choice, bridge_amount
 
 def main():
     print("\033[92m" + center_text(description) + "\033[0m")
     print("\n\n")
 
     successful_txs = 0
-    current_network = 'OP Sepolia'  # 修改默认起始链为 OP Sepolia
-    alternate_network = 'Base'      # 修改这里
+    
+    # 获取用户输入的选择和跨链金额
+    choice, bridge_amount = display_menu()
+    
+    # 根据用户选择设置初始网络
+    if choice == '1':
+        current_network = 'Base'
+        alternate_network = 'OP Sepolia'
+    elif choice == '2':
+        current_network = 'OP Sepolia'
+        alternate_network = 'Base'
+    elif choice == '3':
+        current_network = 'OP Sepolia'  # 运行所有链时的起始链
+        alternate_network = 'Base'
+    else:
+        print("无效的选择！")
+        return
 
     while True:
         web3 = Web3(Web3.HTTPProvider(networks[current_network]['rpc_url']))
@@ -200,17 +215,22 @@ def main():
         
         print(f"{chain_symbols[current_network]}当前链: {current_network}, 余额: {balance} ETH{reset_color}")
 
-        if balance < 0.2:
-            print(f"{chain_symbols[current_network]}{current_network} 余额不足 0.2 ETH，切换到 {alternate_network}{reset_color}")
+        if balance < bridge_amount:
+            print(f"{chain_symbols[current_network]}{current_network} 余额不足 {bridge_amount} ETH，切换到 {alternate_network}{reset_color}")
+            # 如果不是运行所有链模式，则在余额不足时退出
+            if choice != '3':
+                print("单链模式下余额不足，程序退出")
+                break
             current_network, alternate_network = alternate_network, current_network
             continue
 
         # 修改桥接方向
         successful_txs = process_network_transactions(
             current_network, 
-            ["OP - Base"] if current_network == 'OP Sepolia' else ["Base - OP Sepolia"],  # 修改这里
+            ["OP - Base"] if current_network == 'OP Sepolia' else ["Base - OP Sepolia"],
             networks[current_network], 
-            successful_txs
+            successful_txs,
+            bridge_amount  # 传入用户设定的跨链金额
         )
 
         # 修改主循环中的等待时间也为 10-15 秒 (原来是 30-60 秒)
