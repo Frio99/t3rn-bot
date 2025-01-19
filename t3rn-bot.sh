@@ -61,10 +61,11 @@ function execute_cross_chain_script() {
         sudo apt install -y python3-pip
     fi
 
-    if ! command -v python3 -m venv &> /dev/null; then
-        echo "python3-venv 未安装，正在安装 python3-venv..."
+    # 检查并安装必要的包
+    if ! command -v python3-venv &> /dev/null; then
+        echo "正在安装 python3-venv..."
         sudo apt update
-        sudo apt install -y python3-venv
+        sudo apt install -y python3-venv python3-pip
     fi
 
     # 拉取仓库
@@ -82,7 +83,21 @@ function execute_cross_chain_script() {
 
     # 创建虚拟环境并激活
     echo "正在创建虚拟环境..."
+    if [ -d "$VENV_DIR" ]; then
+        echo "虚拟环境已存在，正在删除..."
+        rm -rf "$VENV_DIR"
+    fi
+    
     python3 -m venv "$VENV_DIR"
+    
+    # 检查虚拟环境是否创建成功
+    if [ ! -f "$VENV_DIR/bin/activate" ]; then
+        echo "❌ 虚拟环境创建失败"
+        echo "请检查 python3-venv 是否正确安装"
+        exit 1
+    fi
+    
+    echo "正在激活虚拟环境..."
     source "$VENV_DIR/bin/activate"
 
     # 升级 pip
