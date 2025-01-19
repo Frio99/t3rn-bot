@@ -99,6 +99,24 @@ function execute_cross_chain_script() {
     
     echo "正在激活虚拟环境..."
     source "$VENV_DIR/bin/activate"
+    
+    # 检查虚拟环境是否成功激活
+    if [ -z "$VIRTUAL_ENV" ]; then
+        echo "❌ 虚拟环境激活失败"
+        echo "VIRTUAL_ENV 环境变量未设置"
+        exit 1
+    fi
+    
+    # 验证 Python 解释器
+    if ! python3 -c "import sys; sys.exit(0 if sys.prefix == '$VIRTUAL_ENV' else 1)"; then
+        echo "❌ Python 解释器不在虚拟环境中"
+        echo "当前 Python 路径: $(which python3)"
+        echo "预期路径: $VIRTUAL_ENV/bin/python3"
+        exit 1
+    fi
+    
+    echo "✅ 虚拟环境激活成功"
+    echo "Python 路径: $(which python3)"
 
     # 升级 pip
     echo "正在升级 pip..."
